@@ -5,6 +5,8 @@ public class Hello implements HelloInterface, SecondInterface{
 	private static String test = "test field string";
 	public int i = 100;
 
+	public byte[] data;
+
 	static HelloInterface helloInter;
 
 	public static void main(String[] argc){

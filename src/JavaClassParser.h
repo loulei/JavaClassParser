@@ -159,6 +159,7 @@ Item *get_item(const Class *class, const uint16_t idx);
 long to_long(const Long lng);
 double to_double(const Double dbl);
 Item *get_class_string(const Class *class, const uint16_t index);
+char *field2Str(const char fld_type);
 
 #define CLASS_FILE "file/Hello.class"
 

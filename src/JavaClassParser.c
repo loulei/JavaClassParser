@@ -79,6 +79,70 @@ Class *read_class(const ClassFile class_file){
 
 	fread(&class->fields_count, sizeof(class->fields_count), 1, class_file.file);
 	class->fields_count = be16toh(class->fields_count);
+
+	i=0;
+	Field *field;
+	class->fields = calloc(class->fields_count, sizeof(Field));
+	while(i < class->fields_count){
+		field = class->fields + i;
+		fread(&field->flags, sizeof(field->flags), 1, class_file.file);
+		fread(&field->name_idx, sizeof(field->name_idx), 1, class_file.file);
+		fread(&field->desc_idx, sizeof(field->desc_idx), 1, class_file.file);
+		fread(&field->attrs_count, sizeof(field->attrs_count), 1, class_file.file);
+
+		field->flags = be16toh(field->flags);
+		field->name_idx = be16toh(field->name_idx);
+		field->desc_idx = be16toh(field->desc_idx);
+		field->attrs_count = be16toh(field->attrs_count);
+		field->attrs = calloc(field->attrs_count, sizeof(Attribute));
+		int ai = 0;
+		while(ai < field->attrs_count){
+			Attribute *attr = field->attrs + ai;
+			fread(&attr->name_idx, sizeof(attr->name_idx), 1, class_file.file);
+			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
+			attr->name_idx = be16toh(attr->name_idx);
+			attr->length = be32toh(attr->length);
+			attr->info = calloc(attr->length+1, sizeof(char));
+			fread(attr->info, sizeof(char), attr->length, class_file.file);
+			attr->info[attr->length] = '\0';
+			ai++;
+		}
+		i++;
+	}
+
+	fread(&class->methods_count, sizeof(class->methods_count), 1, class_file.file);
+	class->methods_count = be16toh(class->methods_count);
+
+	i=0;
+	Method *method;
+	class->methods = calloc(class->methods_count, sizeof(Method));
+	while(i < class->methods_count){
+		method = class->methods + i;
+		fread(&method->flags, sizeof(method->flags), 1, class_file.file);
+		fread(&method->name_idx, sizeof(method->name_idx), 1, class_file.file);
+		fread(&method->desc_idx, sizeof(method->desc_idx), 1, class_file.file);
+		fread(&method->attrs_count, sizeof(method->attrs_count), 1, class_file.file);
+
+		method->flags = be16toh(method->flags);
+		method->name_idx = be16toh(method->name_idx);
+		method->desc_idx = be16toh(method->desc_idx);
+		method->attrs_count = be16toh(method->attrs_count);
+
+		method->attrs = calloc(method->attrs_count, sizeof(Attribute));
+		int ai = 0;
+		while(ai < method->attrs_count){
+			Attribute *attr = method->attrs + ai;
+			fread(&attr->name_idx, sizeof(attr->name_idx), 1, class_file.file);
+			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
+			attr->name_idx = be16toh(attr->name_idx);
+			attr->length = be32toh(attr->length);
+			attr->info = calloc(attr->length+1, sizeof(char));
+			fread(attr->info, sizeof(char), attr->length, class_file.file);
+			attr->info[attr->length] = '\0';
+			ai++;
+		}
+		i++;
+	}
 	return class;
 }
 
@@ -212,6 +276,7 @@ void print_class(FILE *stream, const Class *class){
 	fprintf(stream, "This class: %s\n", this_class_item->value.string.value);
 	Item *super_class_item = get_class_string(class, class->super_class);
 	fprintf(stream, "Super class: %s\n", super_class_item->value.string.value);
+
 	fprintf(stream, "Interface count: %u\n", class->interfaces_count);
 	if(class->interfaces_count > 0){
 		Ref *iface = class->interfaces;
@@ -227,6 +292,70 @@ void print_class(FILE *stream, const Class *class){
 	}
 
 	fprintf(stream, "Field count: %u\n", class->fields_count);
+	if(class->fields_count > 0){
+		Field *field = class->fields;
+		i = 0;
+		while(i < class->fields_count){
+			Item *name = get_item(class, field->name_idx-1);
+			Item *desc = get_item(class, field->desc_idx-1);
+			fprintf(stream, "field %u: %s %s\n", i, /*field2Str(desc->value.string.value[0])*/desc->value.string.value, name->value.string.value);
+			Attribute attr;
+			if(field->attrs_count > 0){
+				int ai = 0;
+				while(ai < field->attrs_count){
+					attr = field->attrs[ai];
+					Item *item = get_item(class, attr.name_idx-1);
+					fprintf(stream, "\tAttribute name: %s\n", item->value.string.value);
+					fprintf(stream, "\tAttribute length: %u\n", attr.length);
+					fprintf(stream, "\tAttribute info: %s\n", attr.info);
+					ai++;
+				}
+			}
+			i++;
+			field = class->fields + i;
+		}
+	}
+
+	fprintf(stream, "Method count: %u\n", class->methods_count);
+	if(class->methods_count > 0){
+		Method *method = class->methods;
+		i = 0;
+		while(i < class->methods_count){
+			Item *name = get_item(class, method->name_idx - 1);
+			Item *desc = get_item(class, method->desc_idx - 1);
+			fprintf(stream, "method %u: %s %s\n", i, desc->value.string.value, name->value.string.value);
+
+			i++;
+			method = class->methods + i;
+		}
+	}
+}
+
+char *field2Str(const char fld_type){
+	switch(fld_type){
+	case 'B':
+		return "byte";
+	case 'C':
+		return "char";
+	case 'D':
+		return "double";
+	case 'F':
+		return "float";
+	case 'I':
+		return "int";
+	case 'J':
+		return "long";
+	case 'L':
+		return "reference";
+	case 'S':
+		return "short";
+	case 'Z':
+		return "boolean";
+	case '[':
+		return "array";
+	default:
+		return "Undefined";
+	}
 }
 
 Item *get_item(const Class *class, const uint16_t idx){
