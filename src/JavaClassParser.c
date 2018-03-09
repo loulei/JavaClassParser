@@ -56,6 +56,29 @@ Class *read_class(const ClassFile class_file){
 	Class *class = (Class*)malloc(sizeof(Class));
 	parse_header(class_file, class);
 	parse_const_pool(class, class->const_pool_count, class_file);
+
+	fread(&class->flags, sizeof(class->flags), 1, class_file.file);
+	class->flags = be16toh(class->flags);
+
+	fread(&class->this_class, sizeof(class->this_class), 1, class_file.file);
+	class->this_class = be16toh(class->this_class);
+
+	fread(&class->super_class, sizeof(class->super_class), 1, class_file.file);
+	class->super_class = be16toh(class->super_class);
+
+	fread(&class->interfaces_count, sizeof(class->interfaces_count), 1, class_file.file);
+	class->interfaces_count = be16toh(class->interfaces_count);
+
+	class->interfaces = calloc(class->interfaces_count, sizeof(Ref));
+	int i = 0;
+	while(i < class->interfaces_count){
+		fread(&class->interfaces[i].class_idx, sizeof(class->interfaces[i].class_idx), 1, class_file.file);
+		class->interfaces[i].class_idx = be16toh(class->interfaces[i].class_idx);
+		i++;
+	}
+
+	fread(&class->fields_count, sizeof(class->fields_count), 1, class_file.file);
+	class->fields_count = be16toh(class->fields_count);
 	return class;
 }
 
@@ -183,6 +206,27 @@ void print_class(FILE *stream, const Class *class){
 		}
 		i++;
 	}
+
+	fprintf(stream, "Access flags: 0x%x\n", class->flags);
+	Item *this_class_item = get_class_string(class, class->this_class);
+	fprintf(stream, "This class: %s\n", this_class_item->value.string.value);
+	Item *super_class_item = get_class_string(class, class->super_class);
+	fprintf(stream, "Super class: %s\n", super_class_item->value.string.value);
+	fprintf(stream, "Interface count: %u\n", class->interfaces_count);
+	if(class->interfaces_count > 0){
+		Ref *iface = class->interfaces;
+		Item *interface_item_class;
+		i = 0;
+		while(i < class->interfaces_count){
+			interface_item_class = get_item(class, iface->class_idx-1);
+			Item *item = get_item(class, interface_item_class->value.ref.class_idx-1);
+			fprintf(stream, "Interface %u: %s\n", i, item->value.string.value);
+			i++;
+			iface = class->interfaces + i;
+		}
+	}
+
+	fprintf(stream, "Field count: %u\n", class->fields_count);
 }
 
 Item *get_item(const Class *class, const uint16_t idx){
@@ -201,8 +245,8 @@ double to_double(const Double dbl){
 }
 
 Item *get_class_string(const Class *class, const uint16_t index){
-	Item *item = get_item(class, index);
-	return get_item(class, item->value.ref.class_idx);
+	Item *item = get_item(class, index-1);
+	return get_item(class, item->value.ref.class_idx-1);
 }
 
 

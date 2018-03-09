@@ -86,7 +86,7 @@ typedef struct{
 	uint16_t minor_version;
 	uint16_t major_version;
 	uint16_t const_pool_count;
-	uint32_t pool_size_bytes;
+//	uint32_t pool_size_bytes;
 	Item *items;
 	uint16_t flags;
 	uint16_t this_class;
