@@ -23,6 +23,12 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 
+	fseek(classFile, 0, SEEK_END);
+	int file_length = ftell(classFile);
+	printf("file %s length:%d\n", CLASS_FILE, file_length);
+	fseek(classFile, 0, SEEK_SET);
+
+
 	if(!is_class(classFile)){
 		printf("invalid class file\n");
 		return EXIT_FAILURE;
@@ -102,9 +108,8 @@ Class *read_class(const ClassFile class_file){
 			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
 			attr->name_idx = be16toh(attr->name_idx);
 			attr->length = be32toh(attr->length);
-			attr->info = calloc(attr->length+1, sizeof(char));
-			fread(attr->info, sizeof(char), attr->length, class_file.file);
-			attr->info[attr->length] = '\0';
+			attr->info = calloc(attr->length, sizeof(unsigned char));
+			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
 			ai++;
 		}
 		i++;
@@ -136,13 +141,37 @@ Class *read_class(const ClassFile class_file){
 			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
 			attr->name_idx = be16toh(attr->name_idx);
 			attr->length = be32toh(attr->length);
-			attr->info = calloc(attr->length+1, sizeof(char));
-			fread(attr->info, sizeof(char), attr->length, class_file.file);
-			attr->info[attr->length] = '\0';
+			attr->info = calloc(attr->length, sizeof(unsigned char));
+			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
+
+//			Item *item = get_item(class, attr->name_idx-1);
+//			if(!strcmp(item->value.string.value, "Code")){
+//
+//			}
+
 			ai++;
 		}
 		i++;
 	}
+
+	fread(&class->attributes_count, sizeof(class->attributes_count), 1, class_file.file);
+	class->attributes_count = be16toh(class->attributes_count);
+	if(class->attributes_count > 0){
+		class->attribute = calloc(class->attributes_count, sizeof(Attribute));
+		i = 0;
+		while(i < class->attributes_count){
+			Attribute *attr = class->attribute + i;
+			fread(&attr->name_idx, sizeof(attr->name_idx), 1, class_file.file);
+			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
+			attr->name_idx = be16toh(attr->name_idx);
+			attr->length = be32toh(attr->length);
+			attr->info = calloc(attr->length, sizeof(unsigned char));
+			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
+			i++;
+		}
+	}
+
+	printf("current offset=%ld\n", ftell(class_file.file));
 	return class;
 }
 
@@ -239,7 +268,6 @@ void parse_const_pool(Class *class, const uint16_t const_pool_count, const Class
 			class->items[i] = *item;
 		}
 	}
-
 }
 
 void print_class(FILE *stream, const Class *class){
@@ -307,7 +335,6 @@ void print_class(FILE *stream, const Class *class){
 					Item *item = get_item(class, attr.name_idx-1);
 					fprintf(stream, "\tAttribute name: %s\n", item->value.string.value);
 					fprintf(stream, "\tAttribute length: %u\n", attr.length);
-					fprintf(stream, "\tAttribute info: %s\n", attr.info);
 					ai++;
 				}
 			}
@@ -323,12 +350,42 @@ void print_class(FILE *stream, const Class *class){
 		while(i < class->methods_count){
 			Item *name = get_item(class, method->name_idx - 1);
 			Item *desc = get_item(class, method->desc_idx - 1);
-			fprintf(stream, "method %u: %s %s\n", i, desc->value.string.value, name->value.string.value);
-
+			fprintf(stream, "method %u: %s %s, Attribute count: %u\n", i, desc->value.string.value, name->value.string.value, method->attrs_count);
+			Attribute attr;
+			if(method->attrs_count > 0){
+				int ai = 0;
+				while(ai < method->attrs_count){
+					attr = method->attrs[ai];
+					Item *item = get_item(class, attr.name_idx-1);
+					fprintf(stream, "\tAttribute name: %s\n", item->value.string.value);
+					fprintf(stream, "\tAttribute length: %u\n", attr.length);
+					ai++;
+				}
+			}
 			i++;
 			method = class->methods + i;
 		}
 	}
+
+	fprintf(stream, "Attribute count: %u\n", class->attributes_count);
+	if(class->attributes_count > 0){
+		Attribute attr;
+		i=0;
+		while(i < class->attributes_count){
+			attr = class->attribute[i];
+			Item *name = get_item(class, attr.name_idx - 1);
+			fprintf(stream, "Attribute name: %s\n", name->value.string.value);
+			fprintf(stream, "Attribute length: %u\n", attr.length);
+
+			if(!strcmp("SourceFile", name->value.string.value)){
+				uint16_t index = be16toh(*(uint16_t*)(attr.info));
+				Item *item = get_item(class, index-1);
+				fprintf(stream, "SourceFile: %s\n", item->value.string.value);
+			}
+			i++;
+		}
+	}
+
 }
 
 char *field2Str(const char fld_type){

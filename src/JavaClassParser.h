@@ -8,8 +8,10 @@
 #ifndef JAVACLASSPARSER_H_
 #define JAVACLASSPARSER_H_
 
+#define u1 uint8_t;
 #define u2 uint16_t;
 #define u4 uint32_t;
+
 
 typedef enum {
 	ACC_PUBLIC		= 0x0001,
@@ -25,7 +27,7 @@ typedef enum {
 typedef struct {
 	uint16_t name_idx;
 	uint32_t length;
-	char *info;
+	unsigned char *info;
 } Attribute;
 
 typedef struct {
@@ -80,6 +82,22 @@ typedef struct {
 		Ref ref;
 	} value;
 } Item;
+
+typedef struct{
+	uint8_t start_pc;
+	uint8_t end_pc;
+	uint8_t handler_pc;
+	uint8_t catch_type;
+}Exception_table;
+
+typedef struct{
+	uint16_t max_stack;
+	uint16_t max_locals;
+	uint32_t code_length;
+	unsigned char *code;
+	uint16_t exception_table_length;
+	Exception_table *excep_tables;
+} Code;
 
 typedef struct{
 	char *file_name;

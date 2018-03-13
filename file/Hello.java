@@ -2,7 +2,7 @@ package com.example.hello;
 
 public class Hello implements HelloInterface, SecondInterface{
 
-	private static String test = "test field string";
+	private static final String test = "test field string";
 	public int i = 100;
 
 	public byte[] data;
