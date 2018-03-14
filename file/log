@@ -1,0 +1,126 @@
+file file/Hello.class length:1102
+current offset=1102
+File: file/Hello.class
+Minor version: 0
+Major version: 52
+Constant pool size: 67
+Item #1, Method: 15.41
+Item #2, Field: 14.42
+Item #3, Field: 43.44
+Item #4, String: 45
+Item #5, Method: 46.47
+Item #6, Field: 14.48
+Item #7, InterfaceMethod: 16.49
+Item #8, Class: 50
+Item #9, Method: 8.51
+Item #10, Class: 52
+Item #11, Method: 10.51
+Item #12, String: 53
+Item #13, String: 54
+Item #14, Class: 55
+Item #15, Class: 56
+Item #16, Class: 57
+Item #17, Class: 58
+Item #18, String_UTF8: test
+Item #19, String_UTF8: Ljava/lang/String;
+Item #20, String_UTF8: ConstantValue
+Item #21, String: 59
+Item #22, String_UTF8: i
+Item #23, String_UTF8: I
+Item #24, String_UTF8: data
+Item #25, String_UTF8: [B
+Item #26, String_UTF8: helloInter
+Item #27, String_UTF8: Lcom/example/hello/HelloInterface;
+Item #28, String_UTF8: <init>
+Item #29, String_UTF8: ()V
+Item #30, String_UTF8: Code
+Item #31, String_UTF8: LineNumberTable
+Item #32, String_UTF8: main
+Item #33, String_UTF8: ([Ljava/lang/String;)V
+Item #34, String_UTF8: StackMapTable
+Item #35, Class: 50
+Item #36, Class: 52
+Item #37, String_UTF8: sayHello
+Item #38, String_UTF8: secondHello
+Item #39, String_UTF8: SourceFile
+Item #40, String_UTF8: Hello.java
+Item #41, Name: 28.29
+Item #42, Name: 22.23
+Item #43, Class: 60
+Item #44, Name: 61.62
+Item #45, String_UTF8: Hello, dex!
+Item #46, Class: 63
+Item #47, Name: 64.65
+Item #48, Name: 26.27
+Item #49, Name: 37.29
+Item #50, String_UTF8: java/lang/NullPointerException
+Item #51, Name: 66.29
+Item #52, String_UTF8: java/lang/Exception
+Item #53, String_UTF8: hello interface
+Item #54, String_UTF8: second interface
+Item #55, String_UTF8: com/example/hello/Hello
+Item #56, String_UTF8: java/lang/Object
+Item #57, String_UTF8: com/example/hello/HelloInterface
+Item #58, String_UTF8: com/example/hello/SecondInterface
+Item #59, String_UTF8: test field string
+Item #60, String_UTF8: java/lang/System
+Item #61, String_UTF8: out
+Item #62, String_UTF8: Ljava/io/PrintStream;
+Item #63, String_UTF8: java/io/PrintStream
+Item #64, String_UTF8: println
+Item #65, String_UTF8: (Ljava/lang/String;)V
+Item #66, String_UTF8: printStackTrace
+Access flags: 0x21
+This class: com/example/hello/Hello
+Super class: java/lang/Object
+Interface count: 2
+Interface 0: com/example/hello/HelloInterface
+Interface 1: com/example/hello/SecondInterface
+Field count: 4
+field 0: Ljava/lang/String; test
+	Attribute name: ConstantValue
+	Attribute length: 2
+field 1: I i
+field 2: [B data
+field 3: Lcom/example/hello/HelloInterface; helloInter
+Method count: 4
+method 0: ()V <init>, Attribute count: 1
+	Attribute name: Code
+	Attribute length: 39
+	max stack: 2
+	max locals: 1
+	code length: 11
+	exception table length: 0
+method 1: ([Ljava/lang/String;)V main, Attribute count: 1
+	Attribute name: Code
+	Attribute length: 122
+	max stack: 2
+	max locals: 2
+	code length: 33
+	exception table length: 2
+		start_pc: 8
+		end_pc: 16
+		handler_pc: 19
+		catch_type: 8
+		start_pc: 8
+		end_pc: 16
+		handler_pc: 27
+		catch_type: 10
+method 2: ()V sayHello, Attribute count: 1
+	Attribute name: Code
+	Attribute length: 37
+	max stack: 2
+	max locals: 1
+	code length: 9
+	exception table length: 0
+method 3: ()V secondHello, Attribute count: 1
+	Attribute name: Code
+	Attribute length: 37
+	max stack: 2
+	max locals: 1
+	code length: 9
+	exception table length: 0
+Attribute count: 1
+Attribute name: SourceFile
+Attribute length: 2
+SourceFile: Hello.java

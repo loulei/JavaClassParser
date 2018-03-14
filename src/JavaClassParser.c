@@ -142,9 +142,69 @@ Class *read_class(const ClassFile class_file){
 			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
 			attr->name_idx = be16toh(attr->name_idx);
 			attr->length = be32toh(attr->length);
-			attr->info = calloc(attr->length, sizeof(unsigned char));
-			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
 
+			Item *item = get_item(class, attr->name_idx - 1);
+			if(!strcmp("Code", item->value.string.value)){
+				Code *code = calloc(1, sizeof(Code));
+				fread(&code->max_stack, sizeof(code->max_stack), 1, class_file.file);
+				fread(&code->max_locals, sizeof(code->max_locals), 1, class_file.file);
+				fread(&code->code_length, sizeof(code->code_length), 1, class_file.file);
+				code->max_stack = be16toh(code->max_stack);
+				code->max_locals = be16toh(code->max_locals);
+				code->code_length = be32toh(code->code_length);
+
+				code->code = calloc(code->code_length, sizeof(unsigned char));
+				fread(code->code, sizeof(unsigned char), code->code_length, class_file.file);
+
+				fread(&code->exception_table_length, sizeof(code->exception_table_length), 1, class_file.file);
+				code->exception_table_length = be16toh(code->exception_table_length);
+
+				if(code->exception_table_length > 0){
+					code->excep_table = calloc(code->exception_table_length, sizeof(Exception_table));
+					int ei = 0;
+					Exception_table *etable;
+					while(ei < code->exception_table_length){
+						etable = code->excep_table + ei;
+						fread(&etable->start_pc, sizeof(etable->start_pc), 1, class_file.file);
+						fread(&etable->end_pc, sizeof(etable->end_pc), 1, class_file.file);
+						fread(&etable->handler_pc, sizeof(etable->handler_pc), 1, class_file.file);
+						fread(&etable->catch_type, sizeof(etable->catch_type), 1, class_file.file);
+
+						etable->start_pc = be16toh(etable->start_pc);
+						etable->end_pc = be16toh(etable->end_pc);
+						etable->handler_pc = be16toh(etable->handler_pc);
+						etable->catch_type = be16toh(etable->catch_type);
+
+						ei++;
+					}
+				}
+
+				fread(&code->attributes_count, sizeof(code->attributes_count), 1, class_file.file);
+				code->attributes_count = be16toh(code->attributes_count);
+
+				if(code->attributes_count > 0){
+					int cai = 0;
+					code->attribute = calloc(code->attributes_count, sizeof(Attribute));
+					while(cai < code->attributes_count){
+						Attribute *codeAttr = code->attribute + cai;
+						fread(&codeAttr->name_idx, sizeof(codeAttr->name_idx), 1, class_file.file);
+						fread(&codeAttr->length, sizeof(codeAttr->length), 1, class_file.file);
+						codeAttr->name_idx = be16toh(codeAttr->name_idx);
+						codeAttr->length = be32toh(codeAttr->length);
+
+						codeAttr->value.info = calloc(codeAttr->length, sizeof(unsigned char));
+						fread(codeAttr->value.info, sizeof(unsigned char), codeAttr->length, class_file.file);
+
+						cai++;
+					}
+				}
+
+				method->attrs->value.code = code;
+
+			}else{
+				attr->value.info = calloc(attr->length, sizeof(unsigned char));
+				fread(attr->value.info, sizeof(unsigned char), attr->length, class_file.file);
+			}
 			ai++;
 		}
 		i++;
@@ -161,8 +221,15 @@ Class *read_class(const ClassFile class_file){
 			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
 			attr->name_idx = be16toh(attr->name_idx);
 			attr->length = be32toh(attr->length);
-			attr->info = calloc(attr->length, sizeof(unsigned char));
-			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
+
+			Item *name = get_item(class, attr->name_idx - 1);
+			if(!strcmp("SourceFile", name->value.string.value)){
+				fread(&attr->value.nameIndex, sizeof(attr->value.nameIndex), 1, class_file.file);
+				attr->value.nameIndex = be16toh(attr->value.nameIndex);
+			}else{
+				attr->value.info = calloc(attr->length, sizeof(unsigned char));
+				fread(attr->value.info, sizeof(unsigned char), attr->length, class_file.file);
+			}
 			i++;
 		}
 	}
@@ -347,37 +414,39 @@ void print_class(FILE *stream, const Class *class){
 			Item *name = get_item(class, method->name_idx - 1);
 			Item *desc = get_item(class, method->desc_idx - 1);
 			fprintf(stream, "method %u: %s %s, Attribute count: %u\n", i, desc->value.string.value, name->value.string.value, method->attrs_count);
-			Attribute attr;
+			Attribute *attr;
 			if(method->attrs_count > 0){
 				int ai = 0;
 				while(ai < method->attrs_count){
-					attr = method->attrs[ai];
-					Item *item = get_item(class, attr.name_idx-1);
+					attr = method->attrs + ai;
+					Item *item = get_item(class, attr->name_idx-1);
 					fprintf(stream, "\tAttribute name: %s\n", item->value.string.value);
-					fprintf(stream, "\tAttribute length: %u\n", attr.length);
+					fprintf(stream, "\tAttribute length: %u\n", attr->length);
 
-//					if(!strcmp("Code", item->value.string.value)){
-//						Code *code = calloc(1, sizeof(Code));
-//						code->max_stack = be16toh(*(uint16_t*)(attr.info));
-//						code->max_locals = be16toh(*(uint16_t*)(attr.info + 2));
-//						code->code_length = be32toh(*(uint32_t*)(attr.info + 4));
-//						code->exception_table_length = be16toh(*(uint16_t*)(attr.info + 8 + code->code_length));
-//
-//						fprintf(stream, "\t\tmax stack: %u\n", code->max_stack);
-//						fprintf(stream, "\t\tmax locals: %u\n", code->max_locals);
-//						fprintf(stream, "\t\tcode length: %u\n", code->code_length);
-//						fprintf(stream, "\t\texception table length: %u\n", code->exception_table_length);
-//
-//						if(code->exception_table_length > 0){
-//							code->excep_table = calloc(code->exception_table_length, sizeof(Exception_table));
-//							int ei = 0;
-//							Exception_table etable;
-//							while(ei < code->exception_table_length){
-//								etable = code->excep_table[ei];
-//								etable.start_pc = be16toh()
-//							}
-//						}
-//					}
+					if(!strcmp("Code", item->value.string.value)){
+						Code *code = attr->value.code;
+						fprintf(stream, "\tmax stack: %u\n", code->max_stack);
+						fprintf(stream, "\tmax locals: %u\n", code->max_locals);
+						fprintf(stream, "\tcode length: %u\n", code->code_length);
+						fprintf(stream, "\texception table length: %u\n", code->exception_table_length);
+
+						if(code->exception_table_length > 0){
+							Exception_table *etable;
+							int eti = 0;
+							while(eti < code->exception_table_length){
+								etable = code->excep_table + eti;
+								fprintf(stream, "\t\tstart_pc: %u\n", etable->start_pc);
+								fprintf(stream, "\t\tend_pc: %u\n", etable->end_pc);
+								fprintf(stream, "\t\thandler_pc: %u\n", etable->handler_pc);
+
+								Item *eitem = get_class_string(class, etable->catch_type);
+								fprintf(stream, "\t\tcatch_type: %u, name: %s\n", etable->catch_type, eitem->value.string.value);
+
+								eti++;
+							}
+						}
+					}
+
 					ai++;
 				}
 			}
@@ -397,8 +466,7 @@ void print_class(FILE *stream, const Class *class){
 			fprintf(stream, "Attribute length: %u\n", attr.length);
 
 			if(!strcmp("SourceFile", name->value.string.value)){
-				uint16_t index = be16toh(*(uint16_t*)(attr.info));
-				Item *item = get_item(class, index-1);
+				Item *item = get_item(class, attr.value.nameIndex - 1);
 				fprintf(stream, "SourceFile: %s\n", item->value.string.value);
 			}
 			i++;
