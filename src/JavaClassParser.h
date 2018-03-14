@@ -27,7 +27,10 @@ typedef enum {
 typedef struct {
 	uint16_t name_idx;
 	uint32_t length;
-	unsigned char *info;
+	union {
+		Code *code;
+		unsigned char *info;
+	}value;
 } Attribute;
 
 typedef struct {
@@ -84,19 +87,21 @@ typedef struct {
 } Item;
 
 typedef struct{
-	uint8_t start_pc;
-	uint8_t end_pc;
-	uint8_t handler_pc;
-	uint8_t catch_type;
+	uint16_t start_pc;
+	uint16_t end_pc;
+	uint16_t handler_pc;
+	uint16_t catch_type;
 }Exception_table;
 
-typedef struct{
+typedef struct {
 	uint16_t max_stack;
 	uint16_t max_locals;
 	uint32_t code_length;
 	unsigned char *code;
 	uint16_t exception_table_length;
-	Exception_table *excep_tables;
+	Exception_table *excep_table;
+	uint16_t attributes_count;
+	Attribute *attribute;
 } Code;
 
 typedef struct{

@@ -108,8 +108,9 @@ Class *read_class(const ClassFile class_file){
 			fread(&attr->length, sizeof(attr->length), 1, class_file.file);
 			attr->name_idx = be16toh(attr->name_idx);
 			attr->length = be32toh(attr->length);
-			attr->info = calloc(attr->length, sizeof(unsigned char));
-			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
+
+			attr->value.info = calloc(attr->length, sizeof(unsigned char));
+			fread(attr->value.info, sizeof(unsigned char), attr->length, class_file.file);
 			ai++;
 		}
 		i++;
@@ -143,11 +144,6 @@ Class *read_class(const ClassFile class_file){
 			attr->length = be32toh(attr->length);
 			attr->info = calloc(attr->length, sizeof(unsigned char));
 			fread(attr->info, sizeof(unsigned char), attr->length, class_file.file);
-
-//			Item *item = get_item(class, attr->name_idx-1);
-//			if(!strcmp(item->value.string.value, "Code")){
-//
-//			}
 
 			ai++;
 		}
@@ -359,6 +355,29 @@ void print_class(FILE *stream, const Class *class){
 					Item *item = get_item(class, attr.name_idx-1);
 					fprintf(stream, "\tAttribute name: %s\n", item->value.string.value);
 					fprintf(stream, "\tAttribute length: %u\n", attr.length);
+
+//					if(!strcmp("Code", item->value.string.value)){
+//						Code *code = calloc(1, sizeof(Code));
+//						code->max_stack = be16toh(*(uint16_t*)(attr.info));
+//						code->max_locals = be16toh(*(uint16_t*)(attr.info + 2));
+//						code->code_length = be32toh(*(uint32_t*)(attr.info + 4));
+//						code->exception_table_length = be16toh(*(uint16_t*)(attr.info + 8 + code->code_length));
+//
+//						fprintf(stream, "\t\tmax stack: %u\n", code->max_stack);
+//						fprintf(stream, "\t\tmax locals: %u\n", code->max_locals);
+//						fprintf(stream, "\t\tcode length: %u\n", code->code_length);
+//						fprintf(stream, "\t\texception table length: %u\n", code->exception_table_length);
+//
+//						if(code->exception_table_length > 0){
+//							code->excep_table = calloc(code->exception_table_length, sizeof(Exception_table));
+//							int ei = 0;
+//							Exception_table etable;
+//							while(ei < code->exception_table_length){
+//								etable = code->excep_table[ei];
+//								etable.start_pc = be16toh()
+//							}
+//						}
+//					}
 					ai++;
 				}
 			}
