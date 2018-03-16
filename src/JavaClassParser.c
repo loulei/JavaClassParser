@@ -362,13 +362,33 @@ void parse_const_pool(Class *class, const uint16_t const_pool_count, const Class
 }
 
 void print_class(FILE *stream, const Class *class){
+
+	FILE *opcode_file = fopen(OP_CODE_FILE, "rb");
+	if(!opcode_file){
+		printf("open opcode file fail\n");
+		return;
+	}
+	char **opcode_map = calloc(sizeof(char*), 202);
+	char line[1024];
+	uint16_t i = 0;
+	while(fgets(line, 1024, opcode_file)){
+//		fprintf(stream, "line ----> %s\n", line);
+		if(i % 2 == 1){
+			char *opcode = calloc(strlen(line)+1, sizeof(char));
+			memcpy(opcode, line, strlen(line));
+			opcode_map[i/2] = opcode;
+//			fprintf(stream, "%u: %s\n", i/2, opcode);
+		}
+		i++;
+	}
+
 	fprintf(stream, "File: %s\n", class->file_name);
 	fprintf(stream, "Minor version: %u\n", class->minor_version);
 	fprintf(stream, "Major version: %u\n", class->major_version);
 	fprintf(stream, "Constant pool size: %u\n", class->const_pool_count);
 
 	Item *item;
-	uint16_t i = 1;
+	i = 1;
 	while(i < class->const_pool_count){
 		item = get_item(class, i-1);
 		fprintf(stream, "Item #%u, %s: ", i, tag2Str(item->tag));
@@ -457,6 +477,12 @@ void print_class(FILE *stream, const Class *class){
 						fprintf(stream, "\tmax locals: %u\n", code->max_locals);
 						fprintf(stream, "\tcode length: %u\n", code->code_length);
 						fprintf(stream, "\texception table length: %u\n", code->exception_table_length);
+
+						int ci = 0;
+						while(ci < code->code_length){
+							fprintf(stream, "\t\t\t\t%s", opcode_map[code->code[ci]]);
+							ci++;
+						}
 
 						if(code->exception_table_length > 0){
 							Exception_table *etable;

@@ -4,6 +4,7 @@ public class Hello implements HelloInterface, SecondInterface{
 
 	private static final String test = "test field string";
 	public int i = 100;
+	public int outer = 10;
 
 	public byte[] data;
 
@@ -11,6 +12,15 @@ public class Hello implements HelloInterface, SecondInterface{
 
 	public static void main(String[] argc){
 		System.out.println("Hello, dex!");
+		
+		final String s = "qwerty";
+		
+		class MethodInnerClass{
+			void methodInnerMehthod(){
+				String a = s;
+			}
+		}
+		
 		try {
 			helloInter.sayHello();
 		} catch (NullPointerException e) {
@@ -30,4 +40,9 @@ public class Hello implements HelloInterface, SecondInterface{
 		System.out.println("second interface");
 	}
 
+	class Inner{
+		void innerMethod(){
+			int inner = outer;
+		}
+	}
 }

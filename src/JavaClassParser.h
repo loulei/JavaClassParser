@@ -196,6 +196,7 @@ Item *get_class_string(const Class *class, const uint16_t index);
 char *field2Str(const char fld_type);
 
 #define CLASS_FILE "file/Hello.class"
+#define OP_CODE_FILE "file/ins.txt"
 
 #endif /* JAVACLASSPARSER_H_ */
 

@@ -1,0 +1,88 @@
+private void ResolveStackMapTableAttribute()
+{
+    int number_of_entries=GetAndComputeTwoByte();
+    System.out.println("ResolveStackMapTableAttribute. number_of_entries:" +number_of_entries);
+
+    for (int i=0; i<number_of_entries; i++)
+    {
+        int type=GetByte();
+
+        System.out.print("frame_type: "+type+ " ");
+        if (type >=0 && type <=63)
+        {
+            System.out.println("frame_type: SAME");
+        }
+        else if (type >=64 && type <=127)
+        {
+            System.out.print("frame_type: SAME_LOCALS_1_STACK_ITEM ");
+            VerificationTypeInfo();
+        }
+        else if (type ==247)
+        {
+            int offet_delta=GetAndComputeTwoByte();
+            System.out.print("frame_type: SAME_LOCALS_1_STACK_ITEM_EXTENED. offet_delta"+offet_delta);
+            VerificationTypeInfo();
+        }
+        else if (type >=248 && type <=250)
+        {
+
+            int offet_delta=GetAndComputeTwoByte();
+            System.out.println("frame_type: CHOP, offet_delta: "+offet_delta);
+        }
+        else if (type == 251)
+        {
+            int offet_delta=GetAndComputeTwoByte();
+            System.out.println("frame_type: SAME_FRAME_EXTENED, offet_delta: "+offet_delta);
+        }
+        else if (type >=252 && type <=254)
+        {
+            int offet_delta=GetAndComputeTwoByte();
+            System.out.print("frame_type: APPEND, offet_delta: "+offet_delta);
+            for(int j=0;j<type-251;j++)
+            {
+                VerificationTypeInfo();
+            }
+        }
+        else if ( type == 255)
+        {
+            int offet_delta=GetAndComputeTwoByte();
+            int number_of_locals=GetAndComputeTwoByte();
+            System.out.print("frame_type: FULL_FRAME, offet_delta: "+offet_delta+" number_of_locals: "+number_of_locals);
+            for(int j=0;j<number_of_locals;j++)
+            {
+                VerificationTypeInfo();
+            }
+            int number_of_stack_items=GetAndComputeTwoByte();
+            for(int j=0;j<number_of_stack_items;j++)
+            {
+                VerificationTypeInfo();
+            }
+        }
+    }
+
+}
+private void VerificationTypeInfo()
+{
+    int tag=GetByte();
+    System.out.print("VerificationTypeInfo. tag: "+tag+" ");
+    switch (tag)
+    {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:break;
+        case 7:
+        case 8:
+            System.out.print("offset or cpool_index: "+Integer.toHexString(GetAndComputeTwoByte()));break;
+        default:
+            System.out.print("VerificationTypeInfo. switch default branch! tag: "+tag);
+    }
+    System.out.print("\n");
+}
+
+
+
+http://www.blogjava.net/DLevin/archive/2011/09/05/358034.html
