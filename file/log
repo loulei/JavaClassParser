@@ -91,6 +91,10 @@ method 0: ()V <init>, Attribute count: 1
 	max locals: 1
 	code length: 11
 	exception table length: 0
+	attribute count: 1
+		Attribute name: LineNumberTable
+			start_pc= 0, line_number= 3
+			start_pc= 4, line_number= 6
 method 1: ([Ljava/lang/String;)V main, Attribute count: 1
 	Attribute name: Code
 	Attribute length: 122
@@ -101,11 +105,23 @@ method 1: ([Ljava/lang/String;)V main, Attribute count: 1
 		start_pc: 8
 		end_pc: 16
 		handler_pc: 19
-		catch_type: 8
+		catch_type: 8, name: java/lang/NullPointerException
 		start_pc: 8
 		end_pc: 16
 		handler_pc: 27
-		catch_type: 10
+		catch_type: 10, name: java/lang/Exception
+	attribute count: 2
+		Attribute name: LineNumberTable
+			start_pc= 0, line_number= 13
+			start_pc= 8, line_number= 15
+			start_pc= 16, line_number= 22
+			start_pc= 19, line_number= 16
+			start_pc= 20, line_number= 18
+			start_pc= 24, line_number= 22
+			start_pc= 27, line_number= 19
+			start_pc= 28, line_number= 21
+			start_pc= 32, line_number= 23
+		Attribute name: StackMapTable
 method 2: ()V sayHello, Attribute count: 1
 	Attribute name: Code
 	Attribute length: 37
@@ -113,6 +129,10 @@ method 2: ()V sayHello, Attribute count: 1
 	max locals: 1
 	code length: 9
 	exception table length: 0
+	attribute count: 1
+		Attribute name: LineNumberTable
+			start_pc= 0, line_number= 26
+			start_pc= 8, line_number= 27
 method 3: ()V secondHello, Attribute count: 1
 	Attribute name: Code
 	Attribute length: 37
@@ -120,6 +140,10 @@ method 3: ()V secondHello, Attribute count: 1
 	max locals: 1
 	code length: 9
 	exception table length: 0
+	attribute count: 1
+		Attribute name: LineNumberTable
+			start_pc= 0, line_number= 30
+			start_pc= 8, line_number= 31
 Attribute count: 1
 Attribute name: SourceFile
 Attribute length: 2

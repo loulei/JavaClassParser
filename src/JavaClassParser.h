@@ -27,10 +27,17 @@ typedef enum {
 } AccessFlags;
 
 typedef struct {
+	uint16_t start_pc;
+	uint16_t line_number;
+} LineNumberTable;
+
+typedef struct {
 	uint16_t name_idx;
 	uint32_t length;
+	uint16_t table_length;
 	union {
 		Code *code;
+		LineNumberTable *table;
 		unsigned char *info;
 		uint16_t nameIndex;
 	}value;

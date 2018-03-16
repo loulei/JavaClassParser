@@ -192,8 +192,36 @@ Class *read_class(const ClassFile class_file){
 						codeAttr->name_idx = be16toh(codeAttr->name_idx);
 						codeAttr->length = be32toh(codeAttr->length);
 
-						codeAttr->value.info = calloc(codeAttr->length, sizeof(unsigned char));
-						fread(codeAttr->value.info, sizeof(unsigned char), codeAttr->length, class_file.file);
+						if(!strcmp("LineNumberTable", get_item(class, codeAttr->name_idx - 1)->value.string.value)){
+							fread(&codeAttr->table_length, sizeof(codeAttr->table_length), 1, class_file.file);
+							codeAttr->table_length = be16toh(codeAttr->table_length);
+							if(codeAttr->table_length > 0){
+								int lnti = 0;
+								codeAttr->value.table = calloc(codeAttr->table_length, sizeof(LineNumberTable));
+								while(lnti < codeAttr->table_length){
+									LineNumberTable *table = codeAttr->value.table + lnti;
+									fread(&table->start_pc, sizeof(table->start_pc), 1, class_file.file);
+									fread(&table->line_number, sizeof(table->line_number), 1, class_file.file);
+
+									table->start_pc = be16toh(table->start_pc);
+									table->line_number = be16toh(table->line_number);
+
+									lnti++;
+								}
+							}
+						}/*else if(!strcmp("StackMapTable", get_item(class, codeAttr->name_idx - 1)->value.string.value)){
+							fread(&codeAttr->table_length, sizeof(codeAttr->table_length), 1, class_file.file);
+							codeAttr->table_length = be16toh(codeAttr->table_length);
+
+							if(codeAttr->table_length > 0){
+
+							}
+						}*/else{
+							codeAttr->value.info = calloc(codeAttr->length, sizeof(unsigned char));
+							fread(codeAttr->value.info, sizeof(unsigned char), codeAttr->length, class_file.file);
+						}
+
+
 
 						cai++;
 					}
@@ -442,7 +470,29 @@ void print_class(FILE *stream, const Class *class){
 								Item *eitem = get_class_string(class, etable->catch_type);
 								fprintf(stream, "\t\tcatch_type: %u, name: %s\n", etable->catch_type, eitem->value.string.value);
 
+
 								eti++;
+							}
+						}
+
+						fprintf(stream, "\tattribute count: %u\n", code->attributes_count);
+						if(code->attributes_count > 0){
+							Attribute *cattr;
+							int cai = 0;
+							while(cai < code->attributes_count){
+								cattr = code->attribute + cai;
+								fprintf(stream, "\t\tAttribute name: %s\n", get_item(class, cattr->name_idx - 1)->value.string.value);
+								if(!strcmp("LineNumberTable", get_item(class, cattr->name_idx - 1)->value.string.value)){
+									if(cattr->table_length > 0){
+										int ltai = 0;
+										while(ltai < cattr->table_length){
+											LineNumberTable *table = cattr->value.table + ltai;
+											fprintf(stream, "\t\t\tstart_pc= %u, line_number= %u\n", table->start_pc, table->line_number);
+											ltai++;
+										}
+									}
+								}
+								cai++;
 							}
 						}
 					}
