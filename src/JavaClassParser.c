@@ -48,8 +48,81 @@ int main(void) {
 
 	print_class(stdout, class);
 
+	run(class);
+
 	free(class);
 	return EXIT_SUCCESS;
+}
+
+StackFrame stackFrame;
+
+void run(Class *class){
+	Method *init = findMethod(class, "<init>");
+
+	if(init){
+		printf("execute init\n");
+		stackInit(&stackFrame, 500);
+		executeMethod(init, &stackFrame, class);
+	}
+}
+
+int executeMethod(Method *method, StackFrame *stack, Class *class){
+	int i = 0;
+//	int j = 0;
+	Code *code = NULL;
+	unsigned char *pc = NULL;
+
+	while(i < method->attrs_count){
+		Attribute *attr = method->attrs + i;
+		Item *name_item = get_item(class, attr->name_idx-1);
+		if(!strcmp("Code", name_item->value.string.value)){
+			code = attr->value.code;
+			break;
+		}
+		i++;
+	}
+
+	if(!code){
+		printf("method code not found\n");
+		return -1;
+	}
+
+	pc = code->code;
+	do{
+		opCodeFunc func = findOpCodeFunc(pc[0]);
+		if(func){
+			i = func(&pc, stack, class);
+		}
+		if(i < 0)
+			break;
+	} while(true);
+
+	return 0;
+}
+
+void stackInit(StackFrame *stack, int entry_size){
+	int i;
+	memset(stack, 0, sizeof(StackFrame));
+	stack->store = (StackEntry *)malloc(sizeof(StackEntry) * entry_size);
+	for(i=0; i<entry_size; i++){
+		memset(&stack->store[i], 0, sizeof(StackEntry));
+	}
+	stack->size = 0;
+}
+
+Method *findMethod(Class *class, char *method_name){
+	int i = 0;
+	Method *methods = class->methods;
+	while (i < class->methods_count){
+		Method *md = methods + i;
+		Item *item = get_item(class, md->name_idx-1);
+		char *name = item->value.string.value;
+		if(!strcmp(name, method_name)){
+			return md;
+		}
+	}
+	return NULL;
+
 }
 
 bool is_class(FILE *class_file){
@@ -317,12 +390,14 @@ void parse_const_pool(Class *class, const uint16_t const_pool_count, const Class
 			fread(&item->value.lng.low, sizeof(item->value.lng.low), 1, class_file.file);
 			item->value.lng.high = be32toh(item->value.lng.high);
 			item->value.lng.low = be32toh(item->value.lng.low);
+			i++;
 			break;
 		case DOUBLE:
 			fread(&item->value.dbl.high, sizeof(item->value.dbl.high), 1, class_file.file);
 			fread(&item->value.dbl.low, sizeof(item->value.dbl.low), 1, class_file.file);
 			item->value.dbl.high = be32toh(item->value.dbl.high);
 			item->value.dbl.low = be32toh(item->value.dbl.low);
+			i++;
 			break;
 		case CLASS:
 			fread(&ref.class_idx, sizeof(ref.class_idx), 1, class_file.file);
@@ -363,24 +438,22 @@ void parse_const_pool(Class *class, const uint16_t const_pool_count, const Class
 
 void print_class(FILE *stream, const Class *class){
 
-	FILE *opcode_file = fopen(OP_CODE_FILE, "rb");
-	if(!opcode_file){
-		printf("open opcode file fail\n");
-		return;
-	}
-	char **opcode_map = calloc(sizeof(char*), 202);
-	char line[1024];
+//	FILE *opcode_file = fopen(OP_CODE_FILE, "rb");
+//	if(!opcode_file){
+//		printf("open opcode file fail\n");
+//		return;
+//	}
+//	char **opcode_map = calloc(sizeof(char*), 202);
+//	char line[1024];
 	uint16_t i = 0;
-	while(fgets(line, 1024, opcode_file)){
-//		fprintf(stream, "line ----> %s\n", line);
-		if(i % 2 == 1){
-			char *opcode = calloc(strlen(line)+1, sizeof(char));
-			memcpy(opcode, line, strlen(line));
-			opcode_map[i/2] = opcode;
-//			fprintf(stream, "%u: %s\n", i/2, opcode);
-		}
-		i++;
-	}
+//	while(fgets(line, 1024, opcode_file)){
+//		if(i % 2 == 1){
+//			char *opcode = calloc(strlen(line)+1, sizeof(char));
+//			memcpy(opcode, line, strlen(line));
+//			opcode_map[i/2] = opcode;
+//		}
+//		i++;
+//	}
 
 	fprintf(stream, "File: %s\n", class->file_name);
 	fprintf(stream, "Minor version: %u\n", class->minor_version);
@@ -479,9 +552,19 @@ void print_class(FILE *stream, const Class *class){
 						fprintf(stream, "\texception table length: %u\n", code->exception_table_length);
 
 						int ci = 0;
+						unsigned char *pc = code->code;
+						int offset = 0;
 						while(ci < code->code_length){
-							fprintf(stream, "\t\t\t\t%s", opcode_map[code->code[ci]]);
-							ci++;
+//							fprintf(stream, "\t\t\t\t%s", opcode_map[code->code[ci]]);
+							char *opName = findOpCode(pc[0]);
+							if(!opName){
+								printf("unknow opcode 0x%02X\n", pc[0]);
+								return;
+							}
+							fprintf(stream, "\t\t\t\t%s\n", opName);
+							offset = findOpCodeOffset(pc[0]);
+							pc += offset;
+							ci+=offset;
 						}
 
 						if(code->exception_table_length > 0){
@@ -599,7 +682,131 @@ Item *get_class_string(const Class *class, const uint16_t index){
 }
 
 
+void pushInt(StackFrame *stack, int value){
+	memset(&stack->store[stack->size], 0, sizeof(StackEntry));
+	unsigned char *tmp = stack->store[stack->size].entry;
+	memcpy(tmp, &value, sizeof(int));
+	stack->store[stack->size].type = STACK_ENTRY_INT;
+	stack->size++;
+}
 
+static int op_aload_0(unsigned char **opCode, StackFrame *stack, Class *class){
+	pushInt(stack, 0);
+	*opCode = *opCode+1;
+	return 0;
+}
+
+static int op_bipush(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+
+static int op_dup(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+
+static int op_getstatic(unsigned char **opCode, StackFrame *stack, Class *class){
+	printf("%s invoke\n", __FUNCTION__);
+	return 0;
+}
+
+static int op_iadd(unsigned char **opCode, StackFrame *stack, Class *class){
+	printf("%s invoke\n", __FUNCTION__);
+	return 0;
+}
+
+static int op_iconst_0(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+
+static int op_iconst_1(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+
+static int op_iconst_2(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+
+static int op_iconst_3(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_iconst_4(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_iconst_5(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_dconst_1(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_idiv(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_imul(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_dadd(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_dmul(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_d2i(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_invokespecial(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_invokevirtual(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_invokestatic(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_iload(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_iload_1(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_iload_2(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_iload_3(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_istore(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_istore_1(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_istore_2(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_istore_3(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_isub(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_ldc(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_ldc2_w(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_new(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_irem(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_sipush(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
+static int op_return(unsigned char **opCode, StackFrame *stack, Class *class){
+	return 0;
+}
 
 
 

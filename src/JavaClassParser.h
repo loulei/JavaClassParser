@@ -135,6 +135,34 @@ typedef struct{
 	Attribute *attribute;
 } Class;
 
+/* Stack Frame */
+#define STACK_ENTRY_NONE        0
+#define STACK_ENTRY_INT         1
+#define STACK_ENTRY_REF         2
+#define STACK_ENTRY_LONG        3
+#define STACK_ENTRY_DOUBLE      4
+#define STACK_ENTRY_FLOAT       5
+
+typedef struct {
+	unsigned char entry[8];
+	int type;
+} StackEntry;
+
+typedef struct{
+	int max_size;
+	int size;
+	StackEntry *store;
+} StackFrame;
+
+typedef int (*opCodeFunc)(unsigned char **opCode, StackFrame *stack, Class *class);
+
+typedef struct {
+    char *name;
+    unsigned char opCode;
+    int offset;
+    opCodeFunc func;
+} byteCode;
+
 static char *CPool_strings[] = {
 		"Undefined",
 		"String_UTF8",
@@ -195,7 +223,119 @@ double to_double(const Double dbl);
 Item *get_class_string(const Class *class, const uint16_t index);
 char *field2Str(const char fld_type);
 
-#define CLASS_FILE "file/Hello.class"
+void run(Class *class);
+Method *findMethod(Class *class, char *method_name);
+void stackInit(StackFrame *stack, int entry_size);
+int executeMethod(Method *method, StackFrame *stack, Class *class);
+
+void pushInt(StackFrame *stack, int value);
+
+static int op_aload_0(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_bipush(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_dup(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_getstatic(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iadd(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iconst_0(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iconst_1(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iconst_2(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iconst_3(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iconst_4(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iconst_5(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_dconst_1(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_idiv(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_imul(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_dadd(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_dmul(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_d2i(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_invokespecial(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_invokevirtual(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_invokestatic(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iload(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iload_1(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iload_2(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_iload_3(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_istore(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_istore_1(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_istore_2(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_istore_3(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_isub(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_ldc(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_ldc2_w(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_new(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_irem(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_sipush(unsigned char **opCode, StackFrame *stack, Class *class);
+static int op_return(unsigned char **opCode, StackFrame *stack, Class *class);
+
+
+static byteCode byteCodes[] = {
+    { "aload_0"         , 0x2A, 1,  op_aload_0          },
+    { "bipush"          , 0x10, 2,  op_bipush           },
+    { "dup"             , 0x59, 1,  op_dup              },
+    { "getstatic"       , 0xB2, 3,  op_getstatic        },
+    { "iadd"            , 0x60, 1,  op_iadd             },
+    { "iconst_0"        , 0x03, 1,  op_iconst_0         },
+    { "iconst_1"        , 0x04, 1,  op_iconst_1         },
+    { "iconst_2"        , 0x05, 1,  op_iconst_2         },
+    { "iconst_3"        , 0x06, 1,  op_iconst_3         },
+    { "iconst_4"        , 0x07, 1,  op_iconst_4         },
+    { "iconst_5"        , 0x08, 1,  op_iconst_5         },
+    { "dconst_1"        , 0x0F, 1,  op_dconst_1         },
+    { "idiv"            , 0x6C, 1,  op_idiv             },
+    { "imul"            , 0x68, 1,  op_imul             },
+    { "dadd"            , 0x63, 1,  op_dadd             },
+    { "dmul"            , 0x6B, 1,  op_dmul             },
+    { "d2i"             , 0x8e, 1,  op_d2i              },
+    { "invokespecial"   , 0xB7, 3,  op_invokespecial    },
+    { "invokevirtual"   , 0xB6, 3,  op_invokevirtual    },
+    { "invokestatic"    , 0xB8, 3,  op_invokestatic     },
+    { "iload"           , 0x15, 2,  op_iload            },
+    { "iload_1"         , 0x1B, 1,  op_iload_1          },
+    { "iload_2"         , 0x1C, 1,  op_iload_2          },
+    { "iload_3"         , 0x1D, 1,  op_iload_3          },
+    { "istore"          , 0x36, 2,  op_istore           },
+    { "istore_1"        , 0x3C, 1,  op_istore_1         },
+    { "istore_2"        , 0x3D, 1,  op_istore_2         },
+    { "istore_3"        , 0x3E, 1,  op_istore_3         },
+    { "isub"            , 0x64, 1,  op_isub             },
+    { "ldc"             , 0x12, 2,  op_ldc              },
+    { "ldc2_w"          , 0x14, 3,  op_ldc2_w           },
+    { "new"             , 0xBB, 3,  op_new              },
+    { "irem"            , 0x70, 1,  op_irem             },
+    { "sipush"          , 0x11, 3,  op_sipush           },
+    { "return"          , 0xB1, 1,  op_return           }
+};
+
+static size_t byteCode_size = sizeof(byteCodes) / sizeof(byteCode);
+
+static opCodeFunc findOpCodeFunc(unsigned char op){
+	int i;
+	for(i=0; i<byteCode_size; i++){
+		if(op == byteCodes[i].opCode)
+			return byteCodes[i].func;
+	}
+	return NULL;
+}
+
+static int findOpCodeOffset(unsigned char op){
+	int i;
+	for(i=0; i<byteCode_size; i++){
+		if(op == byteCodes[i].opCode)
+			return byteCodes[i].offset;
+	}
+	return NULL;
+}
+
+static char *findOpCode(unsigned char op){
+	int i;
+	for(i=0; i<byteCode_size; i++){
+		if(op == byteCodes[i].opCode)
+			return byteCodes[i].name;
+	}
+	return NULL;
+}
+
+
+#define CLASS_FILE "file/Foo1.class"
 #define OP_CODE_FILE "file/ins.txt"
 
 #endif /* JAVACLASSPARSER_H_ */

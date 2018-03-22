@@ -1,150 +1,480 @@
-file file/Hello.class length:1102
-current offset=1102
-File: file/Hello.class
+file file/Foo1.class length:1785
+current offset=1785
+File: file/Foo1.class
 Minor version: 0
 Major version: 52
-Constant pool size: 67
-Item #1, Method: 15.41
-Item #2, Field: 14.42
-Item #3, Field: 43.44
-Item #4, String: 45
-Item #5, Method: 46.47
-Item #6, Field: 14.48
-Item #7, InterfaceMethod: 16.49
-Item #8, Class: 50
-Item #9, Method: 8.51
-Item #10, Class: 52
-Item #11, Method: 10.51
-Item #12, String: 53
-Item #13, String: 54
-Item #14, Class: 55
-Item #15, Class: 56
-Item #16, Class: 57
-Item #17, Class: 58
-Item #18, String_UTF8: test
-Item #19, String_UTF8: Ljava/lang/String;
-Item #20, String_UTF8: ConstantValue
-Item #21, String: 59
-Item #22, String_UTF8: i
-Item #23, String_UTF8: I
-Item #24, String_UTF8: data
-Item #25, String_UTF8: [B
-Item #26, String_UTF8: helloInter
-Item #27, String_UTF8: Lcom/example/hello/HelloInterface;
-Item #28, String_UTF8: <init>
-Item #29, String_UTF8: ()V
-Item #30, String_UTF8: Code
-Item #31, String_UTF8: LineNumberTable
-Item #32, String_UTF8: main
-Item #33, String_UTF8: ([Ljava/lang/String;)V
-Item #34, String_UTF8: StackMapTable
-Item #35, Class: 50
-Item #36, Class: 52
-Item #37, String_UTF8: sayHello
-Item #38, String_UTF8: secondHello
-Item #39, String_UTF8: SourceFile
-Item #40, String_UTF8: Hello.java
-Item #41, Name: 28.29
-Item #42, Name: 22.23
-Item #43, Class: 60
-Item #44, Name: 61.62
-Item #45, String_UTF8: Hello, dex!
-Item #46, Class: 63
-Item #47, Name: 64.65
-Item #48, Name: 26.27
-Item #49, Name: 37.29
-Item #50, String_UTF8: java/lang/NullPointerException
-Item #51, Name: 66.29
-Item #52, String_UTF8: java/lang/Exception
-Item #53, String_UTF8: hello interface
-Item #54, String_UTF8: second interface
-Item #55, String_UTF8: com/example/hello/Hello
-Item #56, String_UTF8: java/lang/Object
-Item #57, String_UTF8: com/example/hello/HelloInterface
-Item #58, String_UTF8: com/example/hello/SecondInterface
-Item #59, String_UTF8: test field string
-Item #60, String_UTF8: java/lang/System
-Item #61, String_UTF8: out
-Item #62, String_UTF8: Ljava/io/PrintStream;
-Item #63, String_UTF8: java/io/PrintStream
-Item #64, String_UTF8: println
-Item #65, String_UTF8: (Ljava/lang/String;)V
-Item #66, String_UTF8: printStackTrace
-Access flags: 0x21
-This class: com/example/hello/Hello
+Constant pool size: 91
+Item #1, Method: 34.43
+Item #2, Method: 44.45
+Item #3, Double: 3216703488.000000
+Item #4, Double: 3216703488.000000
+Item #5, Field: 46.47
+Item #6, String: 48
+Item #7, Method: 49.50
+Item #8, String: 51
+Item #9, String: 52
+Item #10, Class: 53
+Item #11, Method: 10.43
+Item #12, String: 54
+Item #13, Method: 10.55
+Item #14, Method: 10.56
+Item #15, Method: 10.57
+Item #16, String: 58
+Item #17, String: 59
+Item #18, String: 60
+Item #19, String: 61
+Item #20, String: 62
+Item #21, String: 63
+Item #22, String: 64
+Item #23, String: 65
+Item #24, String: 66
+Item #25, String: 67
+Item #26, String: 68
+Item #27, String: 69
+Item #28, String: 70
+Item #29, String: 71
+Item #30, String: 72
+Item #31, String: 73
+Item #32, String: 74
+Item #33, Class: 75
+Item #34, Class: 76
+Item #35, String_UTF8: <init>
+Item #36, String_UTF8: ()V
+Item #37, String_UTF8: Code
+Item #38, String_UTF8: LineNumberTable
+Item #39, String_UTF8: main
+Item #40, String_UTF8: ([Ljava/lang/String;)V
+Item #41, String_UTF8: SourceFile
+Item #42, String_UTF8: Foo1.java
+Item #43, Name: 35.36
+Item #44, Class: 77
+Item #45, Name: 78.79
+Item #46, Class: 80
+Item #47, Name: 81.82
+Item #48, String_UTF8: HelloWorld
+Item #49, Class: 83
+Item #50, Name: 84.85
+Item #51, String_UTF8: --------------------
+Item #52, String_UTF8: initial value 
+Item #53, String_UTF8: java/lang/StringBuilder
+Item #54, String_UTF8: random number x : 
+Item #55, Name: 86.87
+Item #56, Name: 86.88
+Item #57, Name: 89.90
+Item #58, String_UTF8: x = 
+Item #59, String_UTF8: y = 
+Item #60, String_UTF8: c = 
+Item #61, String_UTF8: d = 
+Item #62, String_UTF8: f = 
+Item #63, String_UTF8: c = x + y = 
+Item #64, String_UTF8:  + 
+Item #65, String_UTF8:  = 
+Item #66, String_UTF8: d = d + c = 
+Item #67, String_UTF8: x = c/2 = 
+Item #68, String_UTF8: c = x * y = 
+Item #69, String_UTF8:  * 
+Item #70, String_UTF8: c = x - y = 
+Item #71, String_UTF8:  - 
+Item #72, String_UTF8: c = x / y = 
+Item #73, String_UTF8:  / 
+Item #74, String_UTF8: Foo Test By WJY
+Item #75, String_UTF8: Foo1
+Item #76, String_UTF8: java/lang/Object
+Item #77, String_UTF8: java/lang/Math
+Item #78, String_UTF8: random
+Item #79, String_UTF8: ()D
+Item #80, String_UTF8: java/lang/System
+Item #81, String_UTF8: out
+Item #82, String_UTF8: Ljava/io/PrintStream;
+Item #83, String_UTF8: java/io/PrintStream
+Item #84, String_UTF8: println
+Item #85, String_UTF8: (Ljava/lang/String;)V
+Item #86, String_UTF8: append
+Item #87, String_UTF8: (Ljava/lang/String;)Ljava/lang/StringBuilder;
+Item #88, String_UTF8: (I)Ljava/lang/StringBuilder;
+Item #89, String_UTF8: toString
+Item #90, String_UTF8: ()Ljava/lang/String;
+Access flags: 0x20
+This class: Foo1
 Super class: java/lang/Object
-Interface count: 2
-Interface 0: com/example/hello/HelloInterface
-Interface 1: com/example/hello/SecondInterface
-Field count: 4
-field 0: Ljava/lang/String; test
-	Attribute name: ConstantValue
-	Attribute length: 2
-field 1: I i
-field 2: [B data
-field 3: Lcom/example/hello/HelloInterface; helloInter
-Method count: 4
+Interface count: 0
+Field count: 0
+Method count: 2
 method 0: ()V <init>, Attribute count: 1
 	Attribute name: Code
-	Attribute length: 39
-	max stack: 2
+	Attribute length: 29
+	max stack: 1
 	max locals: 1
-	code length: 11
+	code length: 5
 	exception table length: 0
+				aload_0
+				invokespecial
+				return
+	attribute count: 1
+		Attribute name: LineNumberTable
+			start_pc= 0, line_number= 1
+method 1: ([Ljava/lang/String;)V main, Attribute count: 1
+	Attribute name: Code
+	Attribute length: 878
+	max stack: 4
+	max locals: 6
+	code length: 694
+	exception table length: 0
+				invokestatic
+				ldc2_w
+				dmul
+				dconst_1
+				dadd
+				d2i
+				istore_1
+				sipush
+				istore_2
+				iconst_0
+				istore_3
+				sipush
+				istore
+				iconst_0
+				istore
+				getstatic
+				ldc
+				invokevirtual
+				getstatic
+				ldc
+				invokevirtual
+				getstatic
+				ldc
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_2
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_3
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				ldc
+				invokevirtual
+				iload_1
+				iload_2
+				iadd
+				istore_3
+				iload
+				iload_3
+				iadd
+				istore
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_2
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_3
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload_3
+				iconst_2
+				idiv
+				istore_1
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload_1
+				iload_2
+				imul
+				istore_3
+				iload
+				iload_3
+				iadd
+				istore
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_2
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_3
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload_3
+				iconst_2
+				idiv
+				istore_1
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload_1
+				iload_2
+				isub
+				istore_3
+				iload
+				iload_3
+				iadd
+				istore
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_2
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_3
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload_3
+				iconst_2
+				idiv
+				istore_1
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload_1
+				iload_2
+				idiv
+				istore_3
+				iload
+				iload_3
+				iadd
+				istore
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_2
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_3
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				iload
+				iload_1
+				iadd
+				iload_2
+				iadd
+				iload_3
+				iadd
+				istore
+				getstatic
+				new
+				dup
+				invokespecial
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_1
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_2
+				invokevirtual
+				ldc
+				invokevirtual
+				iload_3
+				invokevirtual
+				ldc
+				invokevirtual
+				iload
+				invokevirtual
+				invokevirtual
+				invokevirtual
+				getstatic
+				ldc
+				invokevirtual
+				return
 	attribute count: 1
 		Attribute name: LineNumberTable
 			start_pc= 0, line_number= 3
-			start_pc= 4, line_number= 6
-method 1: ([Ljava/lang/String;)V main, Attribute count: 1
-	Attribute name: Code
-	Attribute length: 122
-	max stack: 2
-	max locals: 2
-	code length: 33
-	exception table length: 2
-		start_pc: 8
-		end_pc: 16
-		handler_pc: 19
-		catch_type: 8, name: java/lang/NullPointerException
-		start_pc: 8
-		end_pc: 16
-		handler_pc: 27
-		catch_type: 10, name: java/lang/Exception
-	attribute count: 2
-		Attribute name: LineNumberTable
-			start_pc= 0, line_number= 13
-			start_pc= 8, line_number= 15
-			start_pc= 16, line_number= 22
-			start_pc= 19, line_number= 16
-			start_pc= 20, line_number= 18
-			start_pc= 24, line_number= 22
-			start_pc= 27, line_number= 19
-			start_pc= 28, line_number= 21
-			start_pc= 32, line_number= 23
-		Attribute name: StackMapTable
-method 2: ()V sayHello, Attribute count: 1
-	Attribute name: Code
-	Attribute length: 37
-	max stack: 2
-	max locals: 1
-	code length: 9
-	exception table length: 0
-	attribute count: 1
-		Attribute name: LineNumberTable
-			start_pc= 0, line_number= 26
-			start_pc= 8, line_number= 27
-method 3: ()V secondHello, Attribute count: 1
-	Attribute name: Code
-	Attribute length: 37
-	max stack: 2
-	max locals: 1
-	code length: 9
-	exception table length: 0
-	attribute count: 1
-		Attribute name: LineNumberTable
-			start_pc= 0, line_number= 30
-			start_pc= 8, line_number= 31
+			start_pc= 11, line_number= 4
+			start_pc= 15, line_number= 5
+			start_pc= 17, line_number= 6
+			start_pc= 22, line_number= 7
+			start_pc= 25, line_number= 8
+			start_pc= 33, line_number= 9
+			start_pc= 41, line_number= 10
+			start_pc= 49, line_number= 11
+			start_pc= 74, line_number= 12
+			start_pc= 99, line_number= 13
+			start_pc= 124, line_number= 14
+			start_pc= 149, line_number= 15
+			start_pc= 175, line_number= 16
+			start_pc= 201, line_number= 17
+			start_pc= 209, line_number= 19
+			start_pc= 213, line_number= 20
+			start_pc= 219, line_number= 21
+			start_pc= 262, line_number= 22
+			start_pc= 288, line_number= 23
+			start_pc= 292, line_number= 24
+			start_pc= 317, line_number= 26
+			start_pc= 321, line_number= 27
+			start_pc= 327, line_number= 28
+			start_pc= 370, line_number= 29
+			start_pc= 396, line_number= 30
+			start_pc= 400, line_number= 31
+			start_pc= 425, line_number= 33
+			start_pc= 429, line_number= 34
+			start_pc= 435, line_number= 35
+			start_pc= 478, line_number= 36
+			start_pc= 504, line_number= 37
+			start_pc= 508, line_number= 38
+			start_pc= 533, line_number= 40
+			start_pc= 537, line_number= 41
+			start_pc= 543, line_number= 42
+			start_pc= 586, line_number= 43
+			start_pc= 612, line_number= 45
+			start_pc= 622, line_number= 46
+			start_pc= 685, line_number= 47
+			start_pc= 693, line_number= 48
 Attribute count: 1
 Attribute name: SourceFile
 Attribute length: 2
-SourceFile: Hello.java
+SourceFile: Foo1.java
